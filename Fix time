@@ -1,6 +1,0 @@
-Fix time
-add batch sizes
-separate dataset:
-    dev: 10%
-    train: 80%
-    test: 10%

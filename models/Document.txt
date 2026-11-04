@@ -1,0 +1,5 @@
+B = one row of the attention matrix
+
+B = B @ W_V
+
+attentionScores @ B
