@@ -15,7 +15,7 @@ torch.set_printoptions(
 batch = 64
 contextWindow = 120
 emb_dim = 120
-Iters = 10000
+Iters = 1000
 #iterations per epoch
 epoch = 10
 lr = 1e-3
@@ -52,8 +52,8 @@ class Transformer(torch.nn.Module):
         self.data = train_data
         self.vocab_size = len(chars)
         self.emb_dim = emb_dim
-        self.head_count = 3
-        self.head_size = 16
+        self.head_count = 6
+        self.head_size = 32
         self.contextWindow = contextWindow
 
         #-------MATRICES TO TRAIN-------#
@@ -81,7 +81,6 @@ class Transformer(torch.nn.Module):
             torch.nn.Linear(4 * self.emb_dim, self.emb_dim),
             torch.nn.ReLU(),
             torch.nn.Linear(self.emb_dim, self.emb_dim),
-            torch.nn.ReLU(),
             torch.nn.Linear(self.emb_dim, self.vocab_size)
         )
 
@@ -142,6 +141,7 @@ def train(model, iter, lr):
  
         if i % 500 == 0:
             print(i, loss.item())
+            print()
 
     yn = input("save trained model parameters (y/n): ")
 
@@ -169,6 +169,21 @@ def generate(model, max_length):
  
     return decode(ids[0].tolist())
 
+def eval(model, iter):
+    model.eval()
+    with torch.no_grad():
+        for i in range(iter):
+            x, ans = model.get_batch()
+            logits = model(x)
+ 
+            loss = torch.nn.functional.cross_entropy(
+                logits.reshape(-1, model.vocab_size),
+                ans.reshape(-1),
+            )
+ 
+            if i % 100 == 0:
+                print(i, loss.item())
+                print()
 
-train(Transformer(), Iters, lr)
-print(generate(Transformer(), 100))
+model = Transformer()
+pri
